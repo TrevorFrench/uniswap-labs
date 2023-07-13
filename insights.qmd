@@ -16,6 +16,8 @@ title: "Summarize Inisghts"
 import pandas as pd
 from pandasql import sqldf
 import seaborn as sns
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 
 public_path="https://storage.googleapis.com/uniswap-analytics-assignment"
 
@@ -104,6 +106,138 @@ stickiness = sqldf("""
     LEFT JOIN mau m
     ON SUBSTR(d.day, 1, 7) = m.month
 """)
+
+rpt_txn = sqldf("""
+  WITH temp_table AS (
+    SELECT SUBSTR(block_date, 1, 7) AS month
+      , platform
+      , unicorn_id
+      , COUNT(DISTINCT l.txn_hash) AS swap_count
+    FROM labs_swaps l
+    LEFT JOIN protocol_swaps p
+    ON l.txn_hash = p.txn_hash
+    GROUP BY SUBSTR(block_date, 1, 7), platform, unicorn_id
+  ) 
+  SELECT month
+    , ROUND((SUM(CASE WHEN (swap_count > 1 AND platform = 'Mobile') THEN 1 END) * 1.0) / (SUM(CASE WHEN platform = 'Mobile' THEN 1 END) * 1.0), 4) AS mobile
+    , ROUND((SUM(CASE WHEN (swap_count > 1 AND platform = 'Web') THEN 1 END) * 1.0) / (SUM(CASE WHEN platform = 'Web' THEN 1 END) * 1.0), 4) AS web
+    , ROUND((SUM(CASE WHEN (swap_count > 1) THEN 1 END) * 1.0) / COUNT(DISTINCT unicorn_id), 4) AS total
+  FROM temp_table
+  GROUP BY month
+""")
+
+user_funnel = sqldf("""
+  WITH web AS (
+    SELECT "Web" AS source
+      , event_name
+      , COUNT(DISTINCT unicorn_id) AS user_count
+    FROM web_events
+    WHERE SUBSTR(event_time, 1, 7) = "2023-04"
+    GROUP BY source, event_name
+  ), mobile AS (
+    SELECT "Mobile" AS source
+      , event_name
+      , COUNT(DISTINCT unicorn_id) AS user_count
+    FROM mobile_events
+    WHERE SUBSTR(event_time, 1, 7) = "2023-04"
+    GROUP BY source, event_name  
+  ), swaps AS (
+    SELECT platform AS source
+      , "Swap Executed" AS event_name
+      , COUNT(DISTINCT unicorn_id) AS user_count
+    FROM labs_swaps l
+    LEFT JOIN protocol_swaps p ON l.txn_hash = p.txn_hash
+    WHERE SUBSTR(block_date, 1, 7) = "2023-04"
+    GROUP BY source, event_name
+  ) 
+  SELECT source
+    , SUM(CASE WHEN event_name = "Application Loaded" THEN user_count END) AS application_loaded
+    , SUM(CASE WHEN event_name = "Swap Quote Received" THEN user_count END) AS swap_quote_received
+    , SUM(CASE WHEN event_name = "Swap Executed" THEN user_count END) AS swap_executed
+  FROM (
+    SELECT * FROM web
+    UNION ALL SELECT * FROM mobile
+    UNION ALL SELECT * FROM swaps
+  )
+  GROUP BY source;
+""")
+
+event_funnel = sqldf("""
+  WITH web AS (
+    SELECT "Web" AS source
+      , event_name
+      , COUNT(*) AS event_count
+    FROM web_events
+    WHERE SUBSTR(event_time, 1, 7) = "2023-04"
+    GROUP BY source, event_name
+  ), mobile AS (
+    SELECT "Mobile" AS source
+      , event_name
+      , COUNT(*) AS event_count
+    FROM mobile_events
+    WHERE SUBSTR(event_time, 1, 7) = "2023-04"
+    GROUP BY source, event_name  
+  ), swaps AS (
+    SELECT platform AS source
+      , "Swap Executed" AS event_name
+      , COUNT(*) AS event_count
+    FROM labs_swaps l
+    LEFT JOIN protocol_swaps p ON l.txn_hash = p.txn_hash
+    WHERE SUBSTR(block_date, 1, 7) = "2023-04"
+    GROUP BY source, event_name
+  ) 
+  SELECT source
+    , SUM(CASE WHEN event_name = "Application Loaded" THEN event_count END) AS application_loaded
+    , SUM(CASE WHEN event_name = "Swap Quote Received" THEN event_count END) AS swap_quote_received
+    , SUM(CASE WHEN event_name = "Swap Executed" THEN event_count END) AS swap_executed
+  FROM (
+    SELECT * FROM web
+    UNION ALL SELECT * FROM mobile
+    UNION ALL SELECT * FROM swaps
+  )
+  GROUP BY source;
+""")
+
+market_share = sqldf("""
+  SELECT SUBSTR(block_date, 1, 10) AS day
+    , SUM(CASE WHEN platform IS NULL THEN usd_amount END) / SUM(usd_amount) AS protocol
+    , SUM(CASE WHEN platform = "Mobile" THEN usd_amount END) / SUM(usd_amount) AS mobile
+    , SUM(CASE WHEN platform = "Web" THEN usd_amount END) / SUM(usd_amount) AS web
+  FROM protocol_swaps p
+  LEFT JOIN labs_swaps l
+  ON p.txn_hash = l.txn_hash
+  GROUP BY day
+""")
+
+avg_txn = sqldf("""
+  WITH temp_table AS (
+    SELECT SUBSTR(block_date, 1, 7) AS month
+      , COALESCE(platform, "Protocol") AS platform
+      , COALESCE(unicorn_id, wallet_address) AS user
+      , COUNT(DISTINCT COALESCE(l.txn_hash, p.txn_hash)) AS swap_count
+    FROM protocol_swaps p
+    LEFT JOIN labs_swaps l
+    ON p.txn_hash = l.txn_hash
+    GROUP BY SUBSTR(block_date, 1, 7), platform, user
+  ) 
+  SELECT month
+    , AVG(CASE WHEN platform = 'Mobile' THEN swap_count END) AS mobile
+    , AVG(CASE WHEN platform = 'Web' THEN swap_count END) AS web
+    , AVG(CASE WHEN platform = 'Protocol' THEN swap_count END) AS protocol
+    , AVG(swap_count) AS total
+  FROM temp_table
+  GROUP BY month
+""")
+
+avg_txn_val = sqldf("""
+  SELECT SUBSTR(block_date, 1, 7) AS month
+    , COALESCE(platform, "Protocol") AS platform
+    , AVG(p.usd_amount) AS swap_value
+  FROM protocol_swaps p
+  LEFT JOIN labs_swaps l
+  ON p.txn_hash = l.txn_hash
+  GROUP BY SUBSTR(block_date, 1, 7), platform
+""")
 ```
 
 Daily active users are still mostly web users.
@@ -122,4 +256,122 @@ The mobile platform is notably more "sticky" though this metric could be skewed 
 
 ```{python}
 sns.lineplot(data=stickiness, palette="tab10", linewidth=2.5)
+```
+
+## Retention
+
+A single month of data may not be a large enough time period to calculate traditional retention metrics such as retention rate and churn; however, we can look to the repeat purchase ratio to get a sense of how often users are interacting with each platform.
+
+Interestingly, even with mobile activity occurring primarily in the second half of the month, the repeat purchase ratio is already higher on the mobile platform than it is on the web platform.
+
+```{python}
+rpt_txn.head()
+```
+
+## Funnel Analysis
+
+When looking at the user funnel in relative terms, we can observe that the ultimate percentage of users who execute a swap on mobile is on par with users on the web product.
+
+On the other hand, there is an observable deviation in the number of mobile users who receive a swap quote after loading the app when compared to web users.
+
+```{python}
+wuf = user_funnel.loc[user_funnel.source == 'Web']
+muf = user_funnel.loc[user_funnel.source == 'Mobile']
+
+# Define Uniswap's branding colors
+uniswap_black = "#1D1D1D"
+uniswap_pink = "#FF007A"
+
+# Data preparation
+data = pd.DataFrame({
+    'stage': ["Application Loaded", "Swap Quote Received", "Swap Executed"],
+    'web': [
+        wuf['application_loaded'][1] / wuf['application_loaded'][1],
+        wuf['swap_quote_received'][1] / wuf['application_loaded'][1],
+        wuf['swap_executed'][1] / wuf['application_loaded'][1]
+    ],
+    'mobile': [
+        muf['application_loaded'][0] / muf['application_loaded'][0],
+        muf['swap_quote_received'][0] / muf['application_loaded'][0],
+        muf['swap_executed'][0] / muf['application_loaded'][0]
+    ]
+})
+
+# Melt the data to make it suitable for plotting
+melted_data = data.melt(id_vars='stage', var_name='source', value_name='percentage')
+
+# Plotting with Uniswap branding colors
+sns.set(style="whitegrid")  # Set the style
+sns.barplot(x='percentage', y='stage', hue='source', data=melted_data,
+            palette=[uniswap_black, uniswap_pink])
+```
+
+## Swapping
+
+```{python}
+# Set the Uniswap branding colors
+uniswap_black = "#000000"
+uniswap_pink = "#FF007A"
+
+# Set the style
+sns.set(style="whitegrid")
+
+# Convert 'day' column to datetime type
+market_share['day'] = pd.to_datetime(market_share['day'])
+
+# Create the figure and axes objects
+fig, ax1 = plt.subplots()
+
+# Plot the market share for protocol and web on the primary y-axis
+sns.lineplot(x="day", y="protocol", data=market_share, ax=ax1, label="Protocol", color=uniswap_black)
+sns.lineplot(x="day", y="web", data=market_share, ax=ax1, label="Web", color=uniswap_black)
+
+# Set the labels and title for the primary y-axis
+ax1.set_xlabel("Day", fontsize=12, fontweight='bold', color=uniswap_black)
+ax1.set_ylabel("Market Share (Protocol and Web)", fontsize=12, fontweight='bold', color=uniswap_black)
+ax1.set_title("Market Share Over Time", fontsize=14, fontweight='bold', color=uniswap_black)
+
+# Create a secondary y-axis for the mobile data
+ax2 = ax1.twinx()
+
+# Plot the market share for mobile on the secondary y-axis
+sns.lineplot(x="day", y="mobile", data=market_share, ax=ax2, label="Mobile", color=uniswap_pink)
+
+# Set the label for the secondary y-axis
+ax2.set_ylabel("Market Share (Mobile)", fontsize=12, fontweight='bold', color=uniswap_pink)
+
+# Format x-axis ticks
+ax1.xaxis.set_major_locator(mdates.MonthLocator())  # Set major tick as month
+ax1.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m"))  # Format as year-month
+
+# Rotate x-axis tick labels for better readability
+plt.xticks(rotation=45)
+
+# Add legends
+ax1.legend(loc="upper left", frameon=False, fontsize=10)
+ax2.legend(loc="upper right", frameon=False, fontsize=10)
+
+# Set the background color of the plot
+fig.patch.set_facecolor('w')
+ax1.set_facecolor('w')  # Set the primary y-axis background color
+ax2.set_facecolor('w')  # Set the secondary y-axis background color
+
+# Set the text color
+plt.rcParams['text.color'] = uniswap_black
+
+# Adjust spacing between the subplots
+fig.tight_layout()
+
+# Display the plot
+plt.show()
+```
+
+Mobile users have lower average transaction counts and average transaction values than web users.
+
+```{python}
+print(avg_txn)
+```
+
+```{python}
+print(avg_txn_val)
 ```

@@ -165,7 +165,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           </a>
         </li>
     </ul>
-    <a href="https://trevorfrench.com" title="Portfolio" class="sidebar-tool px-1"><i class="bi bi-person-fill"></i></a>
+    <a href="https://www.trevorfrench.com/" title="Portfolio" class="sidebar-tool px-1"><i class="bi bi-person-fill"></i></a>
     <a href="https://www.linkedin.com/in/frenchtrevor/" title="LinkedIn" class="sidebar-tool px-1"><i class="bi bi-linkedin"></i></a>
     <a href="https://twitter.com/TrvrFrnch" title="Twitter" class="sidebar-tool px-1"><i class="bi bi-twitter"></i></a>
     <a href="https://www.youtube.com/@TrevorFrench" title="Youtube" class="sidebar-tool px-1"><i class="bi bi-youtube"></i></a>
@@ -225,6 +225,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   </ul></li>
   <li><a href="#swapping" id="toc-swapping" class="nav-link" data-scroll-target="#swapping">Swapping</a>
   <ul class="collapse">
+  <li><a href="#average-transaction-count" id="toc-average-transaction-count" class="nav-link" data-scroll-target="#average-transaction-count">Average Transaction Count</a></li>
+  <li><a href="#average-transaction-value" id="toc-average-transaction-value" class="nav-link" data-scroll-target="#average-transaction-value">Average Transaction Value</a></li>
   <li><a href="#market-share" id="toc-market-share" class="nav-link" data-scroll-target="#market-share">Market Share</a></li>
   </ul></li>
   </ul>
@@ -693,22 +695,128 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="swapping" class="level2">
 <h2 class="anchored" data-anchor-id="swapping">Swapping</h2>
+<section id="average-transaction-count" class="level3">
+<h3 class="anchored" data-anchor-id="average-transaction-count">Average Transaction Count</h3>
+<p>The average number of transactions per user in a given month. This is calculated for mobile, web, purely protocol, and all three segments combined.</p>
+<div class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>avg_txn <span class="op">=</span> sqldf(<span class="st">"""</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="st">  WITH temp_table AS (</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="st">    SELECT SUBSTR(block_date, 1, 7) AS month</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="st">      , COALESCE(platform, "Protocol") AS platform</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="st">      , COALESCE(unicorn_id, wallet_address) AS user</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="st">      , COUNT(DISTINCT COALESCE(l.txn_hash, p.txn_hash)) AS swap_count</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="st">    FROM protocol_swaps p</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="st">    LEFT JOIN labs_swaps l</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="st">    ON p.txn_hash = l.txn_hash</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="st">    GROUP BY SUBSTR(block_date, 1, 7), platform, user</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="st">  ) </span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="st">  SELECT month</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="st">    , AVG(CASE WHEN platform = 'Mobile' THEN swap_count END) AS mobile</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="st">    , AVG(CASE WHEN platform = 'Web' THEN swap_count END) AS web</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="st">    , AVG(CASE WHEN platform = 'Protocol' THEN swap_count END) AS protocol</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="st">    , AVG(swap_count) AS total</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="st">  FROM temp_table</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="st">  GROUP BY month</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span>)</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>avg_txn.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="8">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>month</th>
+      <th>mobile</th>
+      <th>web</th>
+      <th>protocol</th>
+      <th>total</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2023-04</td>
+      <td>4.2493</td>
+      <td>5.7062</td>
+      <td>7.7855</td>
+      <td>6.8545</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="average-transaction-value" class="level3">
+<h3 class="anchored" data-anchor-id="average-transaction-value">Average Transaction Value</h3>
+<p>The average value of transactions denominated in USD for a given month. This is calculated for mobile, web, and pure protocol.</p>
+<div class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>avg_txn_val <span class="op">=</span> sqldf(<span class="st">"""</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="st">  SELECT SUBSTR(block_date, 1, 7) AS month</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="st">    , COALESCE(platform, "Protocol") AS platform</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="st">    , AVG(p.usd_amount) AS swap_value</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="st">  FROM protocol_swaps p</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="st">  LEFT JOIN labs_swaps l</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="st">  ON p.txn_hash = l.txn_hash</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="st">  GROUP BY SUBSTR(block_date, 1, 7), platform</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span>)</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>avg_txn_val.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="9">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>month</th>
+      <th>platform</th>
+      <th>swap_value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2023-04</td>
+      <td>Protocol</td>
+      <td>6035.4342</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2023-04</td>
+      <td>Mobile</td>
+      <td>788.4250</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2023-04</td>
+      <td>Web</td>
+      <td>2044.9212</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
 <section id="market-share" class="level3">
 <h3 class="anchored" data-anchor-id="market-share">Market Share</h3>
 <p>Uniswap Lab’s share of transaction volume executed on the protocol denominated in USD.</p>
-<div class="cell" data-execution_count="8">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>market_share <span class="op">=</span> sqldf(<span class="st">"""</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="st">  SELECT SUBSTR(block_date, 1, 10) AS day</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="st">    , SUM(CASE WHEN platform IS NULL THEN usd_amount END) / SUM(usd_amount) AS protocol</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="st">    , SUM(CASE WHEN platform = "Mobile" THEN usd_amount END) / SUM(usd_amount) AS mobile</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="st">    , SUM(CASE WHEN platform = "Web" THEN usd_amount END) / SUM(usd_amount) AS web</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="st">  FROM protocol_swaps p</span></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="st">  LEFT JOIN labs_swaps l</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="st">  ON p.txn_hash = l.txn_hash</span></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="st">  GROUP BY day</span></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span>)</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>market_share.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="8">
+<div class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>market_share <span class="op">=</span> sqldf(<span class="st">"""</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="st">  SELECT SUBSTR(block_date, 1, 10) AS day</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="st">    , SUM(CASE WHEN platform IS NULL THEN usd_amount END) / SUM(usd_amount) AS protocol</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="st">    , SUM(CASE WHEN platform = "Mobile" THEN usd_amount END) / SUM(usd_amount) AS mobile</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="st">    , SUM(CASE WHEN platform = "Web" THEN usd_amount END) / SUM(usd_amount) AS web</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="st">  FROM protocol_swaps p</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="st">  LEFT JOIN labs_swaps l</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="st">  ON p.txn_hash = l.txn_hash</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="st">  GROUP BY day</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span>)</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>market_share.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="10">
 
 <div>
 

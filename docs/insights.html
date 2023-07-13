@@ -121,6 +121,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     "search-submit-button-title": "Submit"
   }
 }</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
 <link rel="stylesheet" href="styles.css">
@@ -161,7 +164,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           </a>
         </li>
     </ul>
-    <a href="https://trevorfrench.com" title="Portfolio" class="sidebar-tool px-1"><i class="bi bi-person-fill"></i></a>
+    <a href="https://www.trevorfrench.com/" title="Portfolio" class="sidebar-tool px-1"><i class="bi bi-person-fill"></i></a>
     <a href="https://www.linkedin.com/in/frenchtrevor/" title="LinkedIn" class="sidebar-tool px-1"><i class="bi bi-linkedin"></i></a>
     <a href="https://twitter.com/TrvrFrnch" title="Twitter" class="sidebar-tool px-1"><i class="bi bi-twitter"></i></a>
     <a href="https://www.youtube.com/@TrevorFrench" title="Youtube" class="sidebar-tool px-1"><i class="bi bi-youtube"></i></a>
@@ -205,6 +208,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
    
   <ul>
   <li><a href="#active-users" id="toc-active-users" class="nav-link active" data-scroll-target="#active-users">Active Users</a></li>
+  <li><a href="#retention" id="toc-retention" class="nav-link" data-scroll-target="#retention">Retention</a></li>
+  <li><a href="#funnel-analysis" id="toc-funnel-analysis" class="nav-link" data-scroll-target="#funnel-analysis">Funnel Analysis</a></li>
+  <li><a href="#swapping" id="toc-swapping" class="nav-link" data-scroll-target="#swapping">Swapping</a></li>
   </ul>
 </nav>
     </div>
@@ -233,7 +239,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Daily active users are still mostly web users.</p>
 <div class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>sns.lineplot(data<span class="op">=</span>dau, palette<span class="op">=</span><span class="st">"tab10"</span>, linewidth<span class="op">=</span><span class="fl">2.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="3">
+<div class="cell-output cell-output-display" data-execution_count="2">
 <pre><code>&lt;AxesSubplot:&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
@@ -243,7 +249,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>However, the mobile platform is seeing exponential growth.</p>
 <div class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>sns.lineplot(data<span class="op">=</span>dau[[<span class="st">'day'</span>, <span class="st">'mobile'</span>]], palette<span class="op">=</span><span class="st">"tab10"</span>, linewidth<span class="op">=</span><span class="fl">2.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="4">
+<div class="cell-output cell-output-display" data-execution_count="3">
 <pre><code>&lt;AxesSubplot:&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
@@ -253,11 +259,167 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>The mobile platform is notably more “sticky” though this metric could be skewed due to most of the DAUs being seen in the second half of the month. This is a metric to keep an eye on in the coming months.</p>
 <div class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>sns.lineplot(data<span class="op">=</span>stickiness, palette<span class="op">=</span><span class="st">"tab10"</span>, linewidth<span class="op">=</span><span class="fl">2.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="5">
+<div class="cell-output cell-output-display" data-execution_count="4">
 <pre><code>&lt;AxesSubplot:&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <p><img src="insights_files/figure-html/cell-5-output-2.png" width="589" height="404"></p>
+</div>
+</div>
+</section>
+<section id="retention" class="level2">
+<h2 class="anchored" data-anchor-id="retention">Retention</h2>
+<p>A single month of data may not be a large enough time period to calculate traditional retention metrics such as retention rate and churn; however, we can look to the repeat purchase ratio to get a sense of how often users are interacting with each platform.</p>
+<p>Interestingly, even with mobile activity occurring primarily in the second half of the month, the repeat purchase ratio is already higher on the mobile platform than it is on the web platform.</p>
+<div class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>rpt_txn.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="5">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>month</th>
+      <th>mobile</th>
+      <th>web</th>
+      <th>total</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2023-04</td>
+      <td>0.5857</td>
+      <td>0.5329</td>
+      <td>0.5341</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="funnel-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="funnel-analysis">Funnel Analysis</h2>
+<p>When looking at the user funnel in relative terms, we can observe that the ultimate percentage of users who execute a swap on mobile is on par with users on the web product.</p>
+<p>On the other hand, there is an observable deviation in the number of mobile users who receive a swap quote after loading the app when compared to web users.</p>
+<div class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>wuf <span class="op">=</span> user_funnel.loc[user_funnel.source <span class="op">==</span> <span class="st">'Web'</span>]</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>muf <span class="op">=</span> user_funnel.loc[user_funnel.source <span class="op">==</span> <span class="st">'Mobile'</span>]</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Define Uniswap's branding colors</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>uniswap_black <span class="op">=</span> <span class="st">"#1D1D1D"</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>uniswap_pink <span class="op">=</span> <span class="st">"#FF007A"</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Data preparation</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">'stage'</span>: [<span class="st">"Application Loaded"</span>, <span class="st">"Swap Quote Received"</span>, <span class="st">"Swap Executed"</span>],</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">'web'</span>: [</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>        wuf[<span class="st">'application_loaded'</span>][<span class="dv">1</span>] <span class="op">/</span> wuf[<span class="st">'application_loaded'</span>][<span class="dv">1</span>],</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>        wuf[<span class="st">'swap_quote_received'</span>][<span class="dv">1</span>] <span class="op">/</span> wuf[<span class="st">'application_loaded'</span>][<span class="dv">1</span>],</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>        wuf[<span class="st">'swap_executed'</span>][<span class="dv">1</span>] <span class="op">/</span> wuf[<span class="st">'application_loaded'</span>][<span class="dv">1</span>]</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>    ],</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">'mobile'</span>: [</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>        muf[<span class="st">'application_loaded'</span>][<span class="dv">0</span>] <span class="op">/</span> muf[<span class="st">'application_loaded'</span>][<span class="dv">0</span>],</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>        muf[<span class="st">'swap_quote_received'</span>][<span class="dv">0</span>] <span class="op">/</span> muf[<span class="st">'application_loaded'</span>][<span class="dv">0</span>],</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>        muf[<span class="st">'swap_executed'</span>][<span class="dv">0</span>] <span class="op">/</span> muf[<span class="st">'application_loaded'</span>][<span class="dv">0</span>]</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Melt the data to make it suitable for plotting</span></span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>melted_data <span class="op">=</span> data.melt(id_vars<span class="op">=</span><span class="st">'stage'</span>, var_name<span class="op">=</span><span class="st">'source'</span>, value_name<span class="op">=</span><span class="st">'percentage'</span>)</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Plotting with Uniswap branding colors</span></span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>sns.<span class="bu">set</span>(style<span class="op">=</span><span class="st">"whitegrid"</span>)  <span class="co"># Set the style</span></span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>sns.barplot(x<span class="op">=</span><span class="st">'percentage'</span>, y<span class="op">=</span><span class="st">'stage'</span>, hue<span class="op">=</span><span class="st">'source'</span>, data<span class="op">=</span>melted_data,</span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>            palette<span class="op">=</span>[uniswap_black, uniswap_pink])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="6">
+<pre><code>&lt;AxesSubplot:xlabel='percentage', ylabel='stage'&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="insights_files/figure-html/cell-7-output-2.png" width="719" height="428"></p>
+</div>
+</div>
+</section>
+<section id="swapping" class="level2">
+<h2 class="anchored" data-anchor-id="swapping">Swapping</h2>
+<div class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set the Uniswap branding colors</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>uniswap_black <span class="op">=</span> <span class="st">"#000000"</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>uniswap_pink <span class="op">=</span> <span class="st">"#FF007A"</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Set the style</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>sns.<span class="bu">set</span>(style<span class="op">=</span><span class="st">"whitegrid"</span>)</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert 'day' column to datetime type</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>market_share[<span class="st">'day'</span>] <span class="op">=</span> pd.to_datetime(market_share[<span class="st">'day'</span>])</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the figure and axes objects</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>fig, ax1 <span class="op">=</span> plt.subplots()</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the market share for protocol and web on the primary y-axis</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>sns.lineplot(x<span class="op">=</span><span class="st">"day"</span>, y<span class="op">=</span><span class="st">"protocol"</span>, data<span class="op">=</span>market_share, ax<span class="op">=</span>ax1, label<span class="op">=</span><span class="st">"Protocol"</span>, color<span class="op">=</span>uniswap_black)</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>sns.lineplot(x<span class="op">=</span><span class="st">"day"</span>, y<span class="op">=</span><span class="st">"web"</span>, data<span class="op">=</span>market_share, ax<span class="op">=</span>ax1, label<span class="op">=</span><span class="st">"Web"</span>, color<span class="op">=</span>uniswap_black)</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Set the labels and title for the primary y-axis</span></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>ax1.set_xlabel(<span class="st">"Day"</span>, fontsize<span class="op">=</span><span class="dv">12</span>, fontweight<span class="op">=</span><span class="st">'bold'</span>, color<span class="op">=</span>uniswap_black)</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>ax1.set_ylabel(<span class="st">"Market Share (Protocol and Web)"</span>, fontsize<span class="op">=</span><span class="dv">12</span>, fontweight<span class="op">=</span><span class="st">'bold'</span>, color<span class="op">=</span>uniswap_black)</span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>ax1.set_title(<span class="st">"Market Share Over Time"</span>, fontsize<span class="op">=</span><span class="dv">14</span>, fontweight<span class="op">=</span><span class="st">'bold'</span>, color<span class="op">=</span>uniswap_black)</span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a secondary y-axis for the mobile data</span></span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>ax2 <span class="op">=</span> ax1.twinx()</span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the market share for mobile on the secondary y-axis</span></span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>sns.lineplot(x<span class="op">=</span><span class="st">"day"</span>, y<span class="op">=</span><span class="st">"mobile"</span>, data<span class="op">=</span>market_share, ax<span class="op">=</span>ax2, label<span class="op">=</span><span class="st">"Mobile"</span>, color<span class="op">=</span>uniswap_pink)</span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Set the label for the secondary y-axis</span></span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>ax2.set_ylabel(<span class="st">"Market Share (Mobile)"</span>, fontsize<span class="op">=</span><span class="dv">12</span>, fontweight<span class="op">=</span><span class="st">'bold'</span>, color<span class="op">=</span>uniswap_pink)</span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a><span class="co"># Format x-axis ticks</span></span>
+<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a>ax1.xaxis.set_major_locator(mdates.MonthLocator())  <span class="co"># Set major tick as month</span></span>
+<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a>ax1.xaxis.set_major_formatter(mdates.DateFormatter(<span class="st">"%Y-%m"</span>))  <span class="co"># Format as year-month</span></span>
+<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a><span class="co"># Rotate x-axis tick labels for better readability</span></span>
+<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a>plt.xticks(rotation<span class="op">=</span><span class="dv">45</span>)</span>
+<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a><span class="co"># Add legends</span></span>
+<span id="cb10-40"><a href="#cb10-40" aria-hidden="true" tabindex="-1"></a>ax1.legend(loc<span class="op">=</span><span class="st">"upper left"</span>, frameon<span class="op">=</span><span class="va">False</span>, fontsize<span class="op">=</span><span class="dv">10</span>)</span>
+<span id="cb10-41"><a href="#cb10-41" aria-hidden="true" tabindex="-1"></a>ax2.legend(loc<span class="op">=</span><span class="st">"upper right"</span>, frameon<span class="op">=</span><span class="va">False</span>, fontsize<span class="op">=</span><span class="dv">10</span>)</span>
+<span id="cb10-42"><a href="#cb10-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-43"><a href="#cb10-43" aria-hidden="true" tabindex="-1"></a><span class="co"># Set the background color of the plot</span></span>
+<span id="cb10-44"><a href="#cb10-44" aria-hidden="true" tabindex="-1"></a>fig.patch.set_facecolor(<span class="st">'w'</span>)</span>
+<span id="cb10-45"><a href="#cb10-45" aria-hidden="true" tabindex="-1"></a>ax1.set_facecolor(<span class="st">'w'</span>)  <span class="co"># Set the primary y-axis background color</span></span>
+<span id="cb10-46"><a href="#cb10-46" aria-hidden="true" tabindex="-1"></a>ax2.set_facecolor(<span class="st">'w'</span>)  <span class="co"># Set the secondary y-axis background color</span></span>
+<span id="cb10-47"><a href="#cb10-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-48"><a href="#cb10-48" aria-hidden="true" tabindex="-1"></a><span class="co"># Set the text color</span></span>
+<span id="cb10-49"><a href="#cb10-49" aria-hidden="true" tabindex="-1"></a>plt.rcParams[<span class="st">'text.color'</span>] <span class="op">=</span> uniswap_black</span>
+<span id="cb10-50"><a href="#cb10-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-51"><a href="#cb10-51" aria-hidden="true" tabindex="-1"></a><span class="co"># Adjust spacing between the subplots</span></span>
+<span id="cb10-52"><a href="#cb10-52" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span>
+<span id="cb10-53"><a href="#cb10-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-54"><a href="#cb10-54" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the plot</span></span>
+<span id="cb10-55"><a href="#cb10-55" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="insights_files/figure-html/cell-8-output-1.png" width="656" height="464"></p>
+</div>
+</div>
+<p>Mobile users have lower average transaction counts and average transaction values than web users.</p>
+<div class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(avg_txn)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     month    mobile       web  protocol     total
+0  2023-04  4.249278  5.706158  7.785469  6.854522</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(avg_txn_val)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     month  platform   swap_value
+0  2023-04  Protocol  6035.434185
+1  2023-04    Mobile   788.424967
+2  2023-04       Web  2044.921232</code></pre>
 </div>
 </div>
 

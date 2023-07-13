@@ -248,6 +248,51 @@ event_funnel.head()
 
 ## Swapping
 
+### Average Transaction Count
+
+The average number of transactions per user in a given month. This is calculated for mobile, web, purely protocol, and all three segments combined.
+
+```{python}
+avg_txn = sqldf("""
+  WITH temp_table AS (
+    SELECT SUBSTR(block_date, 1, 7) AS month
+      , COALESCE(platform, "Protocol") AS platform
+      , COALESCE(unicorn_id, wallet_address) AS user
+      , COUNT(DISTINCT COALESCE(l.txn_hash, p.txn_hash)) AS swap_count
+    FROM protocol_swaps p
+    LEFT JOIN labs_swaps l
+    ON p.txn_hash = l.txn_hash
+    GROUP BY SUBSTR(block_date, 1, 7), platform, user
+  ) 
+  SELECT month
+    , AVG(CASE WHEN platform = 'Mobile' THEN swap_count END) AS mobile
+    , AVG(CASE WHEN platform = 'Web' THEN swap_count END) AS web
+    , AVG(CASE WHEN platform = 'Protocol' THEN swap_count END) AS protocol
+    , AVG(swap_count) AS total
+  FROM temp_table
+  GROUP BY month
+""")
+avg_txn.head()
+```
+
+### Average Transaction Value
+
+The average value of transactions denominated in USD for a given month. This is calculated for mobile, web, and pure protocol.
+
+```{python}
+avg_txn_val = sqldf("""
+  SELECT SUBSTR(block_date, 1, 7) AS month
+    , COALESCE(platform, "Protocol") AS platform
+    , AVG(p.usd_amount) AS swap_value
+  FROM protocol_swaps p
+  LEFT JOIN labs_swaps l
+  ON p.txn_hash = l.txn_hash
+  GROUP BY SUBSTR(block_date, 1, 7), platform
+""")
+avg_txn_val.head()
+```
+
+
 ### Market Share
 
 Uniswap Lab's share of transaction volume executed on the protocol denominated in USD.
