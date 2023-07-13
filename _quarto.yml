@@ -1,0 +1,53 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  page-navigation: true
+  title: "Uniswap Labs"
+  sidebar:
+    background: "#F5F5F5"
+    logo: "images/logo.png"
+    pinned: true
+    align: center
+    tools:
+      - icon: github
+        text: "GitHub"
+        menu:
+          - text: Repository
+            url: https://github.com/TrevorFrench/uniswap-labs
+          - text: Profile
+            url: https://github.com/TrevorFrench
+      - icon: person-fill
+        href: https://trevorfrench.com
+        text: "Portfolio"
+      - icon: linkedin
+        href: https://www.linkedin.com/in/frenchtrevor/
+        text: "LinkedIn"
+      - icon: twitter
+        href: https://twitter.com/TrvrFrnch
+        text: "Twitter"
+      - icon: youtube
+        href: https://www.youtube.com/@TrevorFrench
+        text: "Youtube"
+      - icon: medium
+        href: https://medium.com/@FrenchTrevor
+        text: "Medium"
+    style: "docked"
+    contents:
+      - href: intro.qmd
+        text: Introduction
+      - href: eda.qmd
+        text: Exploratory Data Analysis
+      - href: metrics.qmd
+        text: Define and Compute Metrics
+      - href: insights.qmd
+        text: Summarize Insights
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+
+editor: visual

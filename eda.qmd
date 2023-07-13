@@ -1,0 +1,99 @@
+---
+title: "Exploratory Data Analysis"
+---
+
+```{python}
+#| echo: false
+#| output: false
+###########################################
+#### alter this code at your own risk! ####
+###########################################
+
+!pip install pandasql SQLAlchemy==1.4.46
+
+import pandas as pd
+from pandasql import sqldf
+import seaborn as sns
+
+public_path="https://storage.googleapis.com/uniswap-analytics-assignment"
+
+protocol_swaps=pd.read_csv(f"{public_path}/protocol_swaps.csv")
+labs_swaps=pd.read_csv(f"{public_path}/labs_swaps.csv")
+web_events=pd.read_csv(f"{public_path}/web_events.csv")
+mobile_events=pd.read_csv(f"{public_path}/mobile_events.csv")
+
+
+###########################################
+#### alter this code at your own risk! ####
+###########################################
+```
+
+## Protocol Swaps
+
+```{python}
+protocol_swaps.info()
+```
+
+```{python}
+protocol_swaps.head()
+```
+
+```{python}
+protocol_swaps.describe()
+```
+
+```{python}
+print(protocol_swaps['block_date'].min())
+print(protocol_swaps['block_date'].max())
+```
+
+## Labs Swaps
+```{python}
+labs_swaps.info()
+```
+
+```{python}
+labs_swaps.head()
+```
+
+```{python}
+labs_swaps['platform'].value_counts()
+```
+
+## Web Events
+
+```{python}
+web_events.info()
+```
+
+```{python}
+web_events.head()
+```
+
+```{python}
+web_events['event_name'].value_counts()
+```
+
+```{python}
+print(web_events['event_time'].min())
+print(web_events['event_time'].max())
+```
+
+## Mobile Events
+
+```{python}
+mobile_events.info()
+```
+
+```{python}
+mobile_events.head()
+```
+
+```{python}
+mobile_events['event_name'].value_counts()
+```
+
+```{python}
+print(mobile_events['event_time'].min())
+print(mobile_events['event_time'].max())
+```

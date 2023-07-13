@@ -1,0 +1,103 @@
+---
+title: "Introduction"
+---
+
+## Instructions
+
+Welcome to the Uniswap Labs analytics assignment!
+
+In this exercise you will be presented synthetic data representing on-chain transactional data and user engagement events logged from our Web and Mobile products and asked to interpret the data to provide meaningful insights to the business.
+
+Context: In April, Uniswap launched its Mobile Wallet. You are being asked to perform an analysis on how the Wallet has performed in its first month and to compare user engagement of the Wallet to its Web app for the month of April.
+
+Data (DataFrame) Schemas:
+
+1.  protocol_swaps:
+
+    -   block_date: Date of the block in which the swap occurred
+    -   txn_hash: Transaction hash of the swap
+    -   wallet_address: Address of the wallet involved in the swap
+    -   token_in_symbol: Symbol of the token being swapped in
+    -   token_out_symbol: Symbol of the token being swapped out
+    -   usd_amount: Estimated USD value of the swap
+
+    Note: this data includes all swaps interacting with the Uniswap Protocol regardless of wether they originated from a Uniswap Labs product or not
+
+2.  labs_swaps:
+
+    -   txn_hash: Transaction hash of the swap originating from a Uniswap Labs product
+    -   unicorn_id: Unique identifier of the client / device
+    -   platform: Platform from which the swap originated ('Web' or 'Mobile')
+
+3.  web_events:
+
+    -   event_time: Date and time of the event logged from the Web application
+    -   event_type: Type of the event ('Application Loaded' or 'Swap Quote Received')
+    -   unicorn_id: Unique identifier of the client / device
+
+4.  mobile_events:
+
+    -   event_time: Date and time of the event logged from the Mobile Wallet
+    -   event_type: Type of the event ('Application Loaded' or 'Swap Quote Received')
+    -   unicorn_id: Unique identifier of the client / device
+
+Use the four datasets described to accomplish the following tasks:
+
+1)  Define and compute metrics related to:
+
+-   Active Users
+-   Retention
+-   Funnel Analysis
+-   Swapping
+
+Note: write the plain text definition of the metric and show how you compute it.
+
+2)  Summarize and highlight insights (or issues) in user behavior across various segments based on these metrics. Please include written summarizations as well as data visualizations.
+
+Note: Should you progress to the virtual on-site, you will be asked to present your analysis / visualization.
+
+Clone or copy this notebook and run this cell to begin. Once you do so you will be able to work with the data in python and/or write sql queries against the data (see example cells below). You may use additional analytics / data visualization packages you would like in this notebook.
+
+When submitting the assignment please provide a link to your notebook as well as a downloaded .pdf copy of your notebook.
+
+The estimated time for this exercise is 3-4 hours. Please submit your answers to your recruiter. Good luck!
+
+```{python}
+###########################################
+#### alter this code at your own risk! ####
+###########################################
+
+!pip install pandasql SQLAlchemy==1.4.46
+
+import pandas as pd
+from pandasql import sqldf
+import seaborn as sns
+
+public_path="https://storage.googleapis.com/uniswap-analytics-assignment"
+
+protocol_swaps=pd.read_csv(f"{public_path}/protocol_swaps.csv")
+labs_swaps=pd.read_csv(f"{public_path}/labs_swaps.csv")
+web_events=pd.read_csv(f"{public_path}/web_events.csv")
+mobile_events=pd.read_csv(f"{public_path}/mobile_events.csv")
+
+
+###########################################
+#### alter this code at your own risk! ####
+###########################################
+```
+
+## Examples
+
+```{python}
+# Example querying a dataframe with SQL and storing the results as a dataframe
+
+mobile_swaps = sqldf("SELECT * FROM labs_swaps WHERE platform = 'Web'")
+mobile_swaps.head()
+```
+
+```{python}
+# Example performing getting the same result using Pandas DataFrame subsetting
+
+mobile_swaps = labs_swaps.loc[labs_swaps.platform == 'Web']
+mobile_swaps.head()
+```

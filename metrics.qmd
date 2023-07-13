@@ -1,0 +1,131 @@
+---
+title: "Define and Compute Metrics"
+---
+
+## Active Users
+
+```{python}
+#| echo: false
+#| output: false
+###########################################
+#### alter this code at your own risk! ####
+###########################################
+
+!pip install pandasql SQLAlchemy==1.4.46
+
+import pandas as pd
+from pandasql import sqldf
+import seaborn as sns
+
+public_path="https://storage.googleapis.com/uniswap-analytics-assignment"
+
+protocol_swaps=pd.read_csv(f"{public_path}/protocol_swaps.csv")
+labs_swaps=pd.read_csv(f"{public_path}/labs_swaps.csv")
+web_events=pd.read_csv(f"{public_path}/web_events.csv")
+mobile_events=pd.read_csv(f"{public_path}/mobile_events.csv")
+
+
+###########################################
+#### alter this code at your own risk! ####
+###########################################
+```
+
+### Daily Active Users
+
+The number of distinct users who have interacted with the web, mobile, or either platform each day.
+
+```{python}
+dau = sqldf("""
+  WITH mobile AS (
+    SELECT SUBSTR(event_time, 1, 10) AS day,
+           COUNT(DISTINCT unicorn_id) AS daily_active_users
+    FROM mobile_events
+    GROUP BY day
+    ORDER BY day
+  ), web AS (
+    SELECT SUBSTR(event_time, 1, 10) AS day,
+           COUNT(DISTINCT unicorn_id) AS daily_active_users
+    FROM web_events
+    GROUP BY day
+    ORDER BY day
+  ), total AS (
+    SELECT SUBSTR(event_time, 1, 10) AS day,
+           COUNT(DISTINCT unicorn_id) AS daily_active_users
+    FROM (
+        SELECT event_time, unicorn_id FROM web_events
+        UNION ALL
+        SELECT event_time, unicorn_id FROM mobile_events
+    ) AS all_events
+    GROUP BY day
+    ORDER BY day
+  )
+  SELECT m.day AS day
+    , m.daily_active_users AS mobile
+    , w.daily_active_users AS web
+    , t.daily_active_users AS total 
+  FROM mobile m
+  LEFT JOIN web w ON m.day = w.day
+  LEFT JOIN total t ON m.day = t.day
+""")
+dau.head()
+```
+
+### Monthly Active Users
+
+The number of distinct users who have interacted with the web, mobile, or either platform each month.
+
+```{python}
+mau = sqldf("""
+  WITH mobile AS (
+    SELECT SUBSTR(event_time, 1, 7) AS month,
+           COUNT(DISTINCT unicorn_id) AS monthly_active_users
+    FROM mobile_events
+    GROUP BY month
+    ORDER BY month
+  ), web AS (
+    SELECT SUBSTR(event_time, 1, 7) AS month,
+           COUNT(DISTINCT unicorn_id) AS monthly_active_users
+    FROM web_events
+    GROUP BY month
+    ORDER BY month
+  ), total AS (
+    SELECT SUBSTR(event_time, 1, 7) AS month,
+           COUNT(DISTINCT unicorn_id) AS monthly_active_users
+    FROM (
+        SELECT event_time, unicorn_id FROM web_events
+        UNION ALL
+        SELECT event_time, unicorn_id FROM mobile_events
+    ) AS all_events
+    GROUP BY month
+    ORDER BY month
+  )
+  SELECT m.month AS month
+    , m.monthly_active_users AS mobile
+    , w.monthly_active_users AS web
+    , t.monthly_active_users AS total 
+  FROM mobile m
+  LEFT JOIN web w ON m.month = w.month
+  LEFT JOIN total t ON m.month = t.month
+""")
+mau.head()
+```
+
+### Stickiness
+
+The number of DAUs divided by the number of MAUs for the web, mobile, or either UL product.
+
+```{python}
+# Set the display format to show more decimal places
+pd.set_option('display.float_format', '{:.4f}'.format)
+
+stickiness = sqldf("""
+    SELECT d.day
+      , ROUND((CAST(d.mobile AS real) / CAST(m.mobile AS REAL)), 4) AS mobile
+      , ROUND((CAST(d.web AS real) / CAST(m.web AS REAL)), 4) AS web
+      , ROUND((CAST(d.total AS real) / CAST(m.total AS REAL)), 4) AS total
+    FROM dau d
+    LEFT JOIN mau m
+    ON SUBSTR(d.day, 1, 7) = m.month
+""")
+stickiness.head()
+```
