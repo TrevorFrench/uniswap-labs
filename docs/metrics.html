@@ -181,7 +181,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./intro.html" class="sidebar-item-text sidebar-link">Introduction</a>
+  <a href="./index.html" class="sidebar-item-text sidebar-link">Introduction</a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -213,6 +213,19 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#daily-active-users" id="toc-daily-active-users" class="nav-link" data-scroll-target="#daily-active-users">Daily Active Users</a></li>
   <li><a href="#monthly-active-users" id="toc-monthly-active-users" class="nav-link" data-scroll-target="#monthly-active-users">Monthly Active Users</a></li>
   <li><a href="#stickiness" id="toc-stickiness" class="nav-link" data-scroll-target="#stickiness">Stickiness</a></li>
+  </ul></li>
+  <li><a href="#retention" id="toc-retention" class="nav-link" data-scroll-target="#retention">Retention</a>
+  <ul class="collapse">
+  <li><a href="#repeat-purchase-ratio" id="toc-repeat-purchase-ratio" class="nav-link" data-scroll-target="#repeat-purchase-ratio">Repeat Purchase Ratio</a></li>
+  </ul></li>
+  <li><a href="#funnel-analysis" id="toc-funnel-analysis" class="nav-link" data-scroll-target="#funnel-analysis">Funnel Analysis</a>
+  <ul class="collapse">
+  <li><a href="#user-funnel" id="toc-user-funnel" class="nav-link" data-scroll-target="#user-funnel">User Funnel</a></li>
+  <li><a href="#event-funnel" id="toc-event-funnel" class="nav-link" data-scroll-target="#event-funnel">Event Funnel</a></li>
+  </ul></li>
+  <li><a href="#swapping" id="toc-swapping" class="nav-link" data-scroll-target="#swapping">Swapping</a>
+  <ul class="collapse">
+  <li><a href="#market-share" id="toc-market-share" class="nav-link" data-scroll-target="#market-share">Market Share</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -276,7 +289,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="st">  LEFT JOIN total t ON m.day = t.day</span></span>
 <span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span>)</span>
 <span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>dau.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="3">
+<div class="cell-output cell-output-display" data-execution_count="2">
 
 <div>
 
@@ -369,7 +382,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a><span class="st">  LEFT JOIN total t ON m.month = t.month</span></span>
 <span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span>)</span>
 <span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>mau.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="4">
+<div class="cell-output cell-output-display" data-execution_count="3">
 
 <div>
 
@@ -414,7 +427,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="st">    ON SUBSTR(d.day, 1, 7) = m.month</span></span>
 <span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span>)</span>
 <span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>stickiness.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="5">
+<div class="cell-output cell-output-display" data-execution_count="4">
 
 <div>
 
@@ -463,6 +476,287 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <td>0.0071</td>
       <td>0.0649</td>
       <td>0.0636</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="retention" class="level2">
+<h2 class="anchored" data-anchor-id="retention">Retention</h2>
+<section id="repeat-purchase-ratio" class="level3">
+<h3 class="anchored" data-anchor-id="repeat-purchase-ratio">Repeat Purchase Ratio</h3>
+<p>Percent of customers who execute more than one swap through the protocol. This metric is calculated for the mobile product, the web product, and all UL products combined.</p>
+<div class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>rpt_txn <span class="op">=</span> sqldf(<span class="st">"""</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="st">  WITH temp_table AS (</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="st">    SELECT SUBSTR(block_date, 1, 7) AS month</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="st">      , platform</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="st">      , unicorn_id</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="st">      , COUNT(DISTINCT l.txn_hash) AS swap_count</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="st">    FROM labs_swaps l</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="st">    LEFT JOIN protocol_swaps p</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="st">    ON l.txn_hash = p.txn_hash</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="st">    GROUP BY SUBSTR(block_date, 1, 7), platform, unicorn_id</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="st">  ) </span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="st">  SELECT month</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="st">    , ROUND((SUM(CASE WHEN (swap_count &gt; 1 AND platform = 'Mobile') THEN 1 END) * 1.0) / (SUM(CASE WHEN platform = 'Mobile' THEN 1 END) * 1.0), 4) AS mobile</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="st">    , ROUND((SUM(CASE WHEN (swap_count &gt; 1 AND platform = 'Web') THEN 1 END) * 1.0) / (SUM(CASE WHEN platform = 'Web' THEN 1 END) * 1.0), 4) AS web</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="st">    , ROUND((SUM(CASE WHEN (swap_count &gt; 1) THEN 1 END) * 1.0) / COUNT(DISTINCT unicorn_id), 4) AS total</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="st">  FROM temp_table</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="st">  GROUP BY month</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span>)</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>rpt_txn.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="5">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>month</th>
+      <th>mobile</th>
+      <th>web</th>
+      <th>total</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2023-04</td>
+      <td>0.5857</td>
+      <td>0.5329</td>
+      <td>0.5341</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="funnel-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="funnel-analysis">Funnel Analysis</h2>
+<section id="user-funnel" class="level3">
+<h3 class="anchored" data-anchor-id="user-funnel">User Funnel</h3>
+<p>The user funnel counts the number of distinct users who have loaded the application, received a swap quote, and executed a swap. This is calculated for both the mobile and the web product.</p>
+<div class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>user_funnel <span class="op">=</span> sqldf(<span class="st">"""</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="st">  WITH web AS (</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="st">    SELECT "Web" AS source</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="st">      , event_name</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="st">      , COUNT(DISTINCT unicorn_id) AS user_count</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="st">    FROM web_events</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="st">    WHERE SUBSTR(event_time, 1, 7) = "2023-04"</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="st">    GROUP BY source, event_name</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="st">  ), mobile AS (</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="st">    SELECT "Mobile" AS source</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="st">      , event_name</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="st">      , COUNT(DISTINCT unicorn_id) AS user_count</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="st">    FROM mobile_events</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="st">    WHERE SUBSTR(event_time, 1, 7) = "2023-04"</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="st">    GROUP BY source, event_name  </span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="st">  ), swaps AS (</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="st">    SELECT platform AS source</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="st">      , "Swap Executed" AS event_name</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="st">      , COUNT(DISTINCT unicorn_id) AS user_count</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="st">    FROM labs_swaps l</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="st">    LEFT JOIN protocol_swaps p ON l.txn_hash = p.txn_hash</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="st">    WHERE SUBSTR(block_date, 1, 7) = "2023-04"</span></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="st">    GROUP BY source, event_name</span></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="st">  ) </span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a><span class="st">  SELECT source</span></span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a><span class="st">    , SUM(CASE WHEN event_name = "Application Loaded" THEN user_count END) AS application_loaded</span></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a><span class="st">    , SUM(CASE WHEN event_name = "Swap Quote Received" THEN user_count END) AS swap_quote_received</span></span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a><span class="st">    , SUM(CASE WHEN event_name = "Swap Executed" THEN user_count END) AS swap_executed</span></span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a><span class="st">  FROM (</span></span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a><span class="st">    SELECT * FROM web</span></span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a><span class="st">    UNION ALL SELECT * FROM mobile</span></span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a><span class="st">    UNION ALL SELECT * FROM swaps</span></span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a><span class="st">  )</span></span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a><span class="st">  GROUP BY source;</span></span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span>)</span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>user_funnel.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="6">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>source</th>
+      <th>application_loaded</th>
+      <th>swap_quote_received</th>
+      <th>swap_executed</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Mobile</td>
+      <td>18362</td>
+      <td>5906</td>
+      <td>2078</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Web</td>
+      <td>762632</td>
+      <td>342626</td>
+      <td>95296</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="event-funnel" class="level3">
+<h3 class="anchored" data-anchor-id="event-funnel">Event Funnel</h3>
+<p>The event funnel counts the number of times the application is loaded, swap quotes received, and swaps executed. This is calculated for both the mobile and the web product.</p>
+<div class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>event_funnel <span class="op">=</span> sqldf(<span class="st">"""</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="st">  WITH web AS (</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="st">    SELECT "Web" AS source</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="st">      , event_name</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="st">      , COUNT(*) AS event_count</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="st">    FROM web_events</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="st">    WHERE SUBSTR(event_time, 1, 7) = "2023-04"</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="st">    GROUP BY source, event_name</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="st">  ), mobile AS (</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="st">    SELECT "Mobile" AS source</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="st">      , event_name</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="st">      , COUNT(*) AS event_count</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="st">    FROM mobile_events</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="st">    WHERE SUBSTR(event_time, 1, 7) = "2023-04"</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="st">    GROUP BY source, event_name  </span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="st">  ), swaps AS (</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="st">    SELECT platform AS source</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="st">      , "Swap Executed" AS event_name</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="st">      , COUNT(*) AS event_count</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="st">    FROM labs_swaps l</span></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="st">    LEFT JOIN protocol_swaps p ON l.txn_hash = p.txn_hash</span></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a><span class="st">    WHERE SUBSTR(block_date, 1, 7) = "2023-04"</span></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a><span class="st">    GROUP BY source, event_name</span></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a><span class="st">  ) </span></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a><span class="st">  SELECT source</span></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a><span class="st">    , SUM(CASE WHEN event_name = "Application Loaded" THEN event_count END) AS application_loaded</span></span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a><span class="st">    , SUM(CASE WHEN event_name = "Swap Quote Received" THEN event_count END) AS swap_quote_received</span></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a><span class="st">    , SUM(CASE WHEN event_name = "Swap Executed" THEN event_count END) AS swap_executed</span></span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a><span class="st">  FROM (</span></span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a><span class="st">    SELECT * FROM web</span></span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a><span class="st">    UNION ALL SELECT * FROM mobile</span></span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a><span class="st">    UNION ALL SELECT * FROM swaps</span></span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a><span class="st">  )</span></span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a><span class="st">  GROUP BY source;</span></span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span>)</span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>event_funnel.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="7">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>source</th>
+      <th>application_loaded</th>
+      <th>swap_quote_received</th>
+      <th>swap_executed</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Mobile</td>
+      <td>143634</td>
+      <td>141298</td>
+      <td>8830</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Web</td>
+      <td>4864874</td>
+      <td>3612584</td>
+      <td>543774</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="swapping" class="level2">
+<h2 class="anchored" data-anchor-id="swapping">Swapping</h2>
+<section id="market-share" class="level3">
+<h3 class="anchored" data-anchor-id="market-share">Market Share</h3>
+<p>Uniswap Lab’s share of transaction volume executed on the protocol denominated in USD.</p>
+<div class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>market_share <span class="op">=</span> sqldf(<span class="st">"""</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="st">  SELECT SUBSTR(block_date, 1, 10) AS day</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="st">    , SUM(CASE WHEN platform IS NULL THEN usd_amount END) / SUM(usd_amount) AS protocol</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="st">    , SUM(CASE WHEN platform = "Mobile" THEN usd_amount END) / SUM(usd_amount) AS mobile</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="st">    , SUM(CASE WHEN platform = "Web" THEN usd_amount END) / SUM(usd_amount) AS web</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="st">  FROM protocol_swaps p</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="st">  LEFT JOIN labs_swaps l</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="st">  ON p.txn_hash = l.txn_hash</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="st">  GROUP BY day</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span>)</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>market_share.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="8">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>day</th>
+      <th>protocol</th>
+      <th>mobile</th>
+      <th>web</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2023-04-01</td>
+      <td>0.8670</td>
+      <td>0.0000</td>
+      <td>0.1330</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2023-04-02</td>
+      <td>0.8833</td>
+      <td>0.0001</td>
+      <td>0.1166</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2023-04-03</td>
+      <td>0.8527</td>
+      <td>0.0000</td>
+      <td>0.1472</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2023-04-04</td>
+      <td>0.8546</td>
+      <td>0.0000</td>
+      <td>0.1453</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2023-04-05</td>
+      <td>0.8312</td>
+      <td>0.0000</td>
+      <td>0.1688</td>
     </tr>
   </tbody>
 </table>

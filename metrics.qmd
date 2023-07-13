@@ -129,3 +129,139 @@ stickiness = sqldf("""
 """)
 stickiness.head()
 ```
+
+## Retention
+
+### Repeat Purchase Ratio
+
+Percent of customers who execute more than one swap through the protocol. This metric is calculated for the mobile product, the web product, and all UL products combined.
+
+```{python}
+rpt_txn = sqldf("""
+  WITH temp_table AS (
+    SELECT SUBSTR(block_date, 1, 7) AS month
+      , platform
+      , unicorn_id
+      , COUNT(DISTINCT l.txn_hash) AS swap_count
+    FROM labs_swaps l
+    LEFT JOIN protocol_swaps p
+    ON l.txn_hash = p.txn_hash
+    GROUP BY SUBSTR(block_date, 1, 7), platform, unicorn_id
+  ) 
+  SELECT month
+    , ROUND((SUM(CASE WHEN (swap_count > 1 AND platform = 'Mobile') THEN 1 END) * 1.0) / (SUM(CASE WHEN platform = 'Mobile' THEN 1 END) * 1.0), 4) AS mobile
+    , ROUND((SUM(CASE WHEN (swap_count > 1 AND platform = 'Web') THEN 1 END) * 1.0) / (SUM(CASE WHEN platform = 'Web' THEN 1 END) * 1.0), 4) AS web
+    , ROUND((SUM(CASE WHEN (swap_count > 1) THEN 1 END) * 1.0) / COUNT(DISTINCT unicorn_id), 4) AS total
+  FROM temp_table
+  GROUP BY month
+""")
+rpt_txn.head()
+```
+
+## Funnel Analysis
+
+### User Funnel
+
+The user funnel counts the number of distinct users who have loaded the application, received a swap quote, and executed a swap. This is calculated for both the mobile and the web product.
+
+```{python}
+user_funnel = sqldf("""
+  WITH web AS (
+    SELECT "Web" AS source
+      , event_name
+      , COUNT(DISTINCT unicorn_id) AS user_count
+    FROM web_events
+    WHERE SUBSTR(event_time, 1, 7) = "2023-04"
+    GROUP BY source, event_name
+  ), mobile AS (
+    SELECT "Mobile" AS source
+      , event_name
+      , COUNT(DISTINCT unicorn_id) AS user_count
+    FROM mobile_events
+    WHERE SUBSTR(event_time, 1, 7) = "2023-04"
+    GROUP BY source, event_name  
+  ), swaps AS (
+    SELECT platform AS source
+      , "Swap Executed" AS event_name
+      , COUNT(DISTINCT unicorn_id) AS user_count
+    FROM labs_swaps l
+    LEFT JOIN protocol_swaps p ON l.txn_hash = p.txn_hash
+    WHERE SUBSTR(block_date, 1, 7) = "2023-04"
+    GROUP BY source, event_name
+  ) 
+  SELECT source
+    , SUM(CASE WHEN event_name = "Application Loaded" THEN user_count END) AS application_loaded
+    , SUM(CASE WHEN event_name = "Swap Quote Received" THEN user_count END) AS swap_quote_received
+    , SUM(CASE WHEN event_name = "Swap Executed" THEN user_count END) AS swap_executed
+  FROM (
+    SELECT * FROM web
+    UNION ALL SELECT * FROM mobile
+    UNION ALL SELECT * FROM swaps
+  )
+  GROUP BY source;
+""")
+user_funnel.head()
+```
+
+### Event Funnel
+
+The event funnel counts the number of times the application is loaded, swap quotes received, and swaps executed. This is calculated for both the mobile and the web product.
+
+```{python}
+event_funnel = sqldf("""
+  WITH web AS (
+    SELECT "Web" AS source
+      , event_name
+      , COUNT(*) AS event_count
+    FROM web_events
+    WHERE SUBSTR(event_time, 1, 7) = "2023-04"
+    GROUP BY source, event_name
+  ), mobile AS (
+    SELECT "Mobile" AS source
+      , event_name
+      , COUNT(*) AS event_count
+    FROM mobile_events
+    WHERE SUBSTR(event_time, 1, 7) = "2023-04"
+    GROUP BY source, event_name  
+  ), swaps AS (
+    SELECT platform AS source
+      , "Swap Executed" AS event_name
+      , COUNT(*) AS event_count
+    FROM labs_swaps l
+    LEFT JOIN protocol_swaps p ON l.txn_hash = p.txn_hash
+    WHERE SUBSTR(block_date, 1, 7) = "2023-04"
+    GROUP BY source, event_name
+  ) 
+  SELECT source
+    , SUM(CASE WHEN event_name = "Application Loaded" THEN event_count END) AS application_loaded
+    , SUM(CASE WHEN event_name = "Swap Quote Received" THEN event_count END) AS swap_quote_received
+    , SUM(CASE WHEN event_name = "Swap Executed" THEN event_count END) AS swap_executed
+  FROM (
+    SELECT * FROM web
+    UNION ALL SELECT * FROM mobile
+    UNION ALL SELECT * FROM swaps
+  )
+  GROUP BY source;
+""")
+event_funnel.head()
+```
+
+## Swapping
+
+### Market Share
+
+Uniswap Lab's share of transaction volume executed on the protocol denominated in USD.
+
+```{python}
+market_share = sqldf("""
+  SELECT SUBSTR(block_date, 1, 10) AS day
+    , SUM(CASE WHEN platform IS NULL THEN usd_amount END) / SUM(usd_amount) AS protocol
+    , SUM(CASE WHEN platform = "Mobile" THEN usd_amount END) / SUM(usd_amount) AS mobile
+    , SUM(CASE WHEN platform = "Web" THEN usd_amount END) / SUM(usd_amount) AS web
+  FROM protocol_swaps p
+  LEFT JOIN labs_swaps l
+  ON p.txn_hash = l.txn_hash
+  GROUP BY day
+""")
+market_share.head()
+```

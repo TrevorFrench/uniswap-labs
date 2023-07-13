@@ -35,7 +35,7 @@ website:
         text: "Medium"
     style: "docked"
     contents:
-      - href: intro.qmd
+      - href: index.qmd
         text: Introduction
       - href: eda.qmd
         text: Exploratory Data Analysis
