@@ -243,19 +243,20 @@ avg_txn_val = sqldf("""
 Daily active users are still mostly web users.
 
 ```{python}
-sns.lineplot(data=dau, palette="tab10", linewidth=2.5)
+uniswap_pink = "#FF007A"
+sns.lineplot(data=dau, palette=[uniswap_pink, "black", "tab:blue"], linewidth=2.5)
 ```
 
 However, the mobile platform is seeing exponential growth.
 
 ```{python}
-sns.lineplot(data=dau[['day', 'mobile']], palette="tab10", linewidth=2.5)
+sns.lineplot(data=dau[['day', 'mobile']], palette=[uniswap_pink], linewidth=2.5)
 ```
 
 The mobile platform is notably more "sticky" though this metric could be skewed due to most of the DAUs being seen in the second half of the month. This is a metric to keep an eye on in the coming months.
 
 ```{python}
-sns.lineplot(data=stickiness, palette="tab10", linewidth=2.5)
+sns.lineplot(data=stickiness, palette=[uniswap_pink, "black", "tab:blue"], linewidth=2.5)
 ```
 
 ## Retention
@@ -307,6 +308,12 @@ sns.barplot(x='percentage', y='stage', hue='source', data=melted_data,
 ```
 
 ## Swapping
+
+The mobile product does not have enough market share to meaningfully compare it to the web product in absolute terms. Additionally, growth rates may be misleading until data can be observed for a longer time period.
+
+We can overlay the mobile market share on a different scale to observe general trends though. The following graph suggests some level of correlation between web and mobile market share while demonstrating what seems to be high levels of non-cannibalizing growth.
+
+Going forward, it may be important to not only track how much market share the mobile platform is capturing but also how much of that growth is at the expense of the web product.
 
 ```{python}
 # Set the Uniswap branding colors
